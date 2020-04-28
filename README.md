@@ -1,2 +1,3 @@
 # Ccolors
-CuteColors, a friendly copy of coolors.co, made with JavaScript
+
+CuteColors, a friendly copy of http://coolors.co, made with JavaScript
