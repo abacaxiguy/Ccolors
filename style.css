@@ -125,3 +125,21 @@ button:focus {
     cursor: pointer;
     margin: 2rem 0;
 }
+
+@media only screen and (max-width: 750px) {
+    .color h2 {
+        font-size: 1rem;
+    }
+
+    .color {
+        height: 60vh;
+    }
+
+    .adjust,
+    .lock {
+        font-size: 1.4rem;
+    }
+    .panel {
+        margin-top: 0;
+    }
+}
