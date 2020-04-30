@@ -125,6 +125,9 @@ function hslControls(e) {
         .set("hsl.h", hue.value);
 
     colorDivs[index].style.backgroundColor = color;
+
+    // Colorize inputs/sliders
+    colorizeSliders(color, hue, brightness, saturation);
 }
 
 // Update the text to the new color
@@ -139,6 +142,7 @@ function updateTextUI(index) {
     checkTextContrast(color, [textHex, icons[0], icons[1]]);
 }
 
+// Reset the inputs to the current color
 function resetInputs() {
     sliders.forEach((slider) => {
         if (slider.name == "hue") {
