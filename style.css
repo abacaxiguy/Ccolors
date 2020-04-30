@@ -52,12 +52,13 @@ button:focus {
     background: rgb(255, 255, 255);
     padding: 1rem;
     width: 80%;
-    border-top-right-radius: 1rem;
-    border-top-left-radius: 1rem;
+    border-top-left-radius: 0.7rem;
+    border-top-right-radius: 0.3rem;
 
     /* adding an adjustment class */
     transform: translateY(100px);
     opacity: 0;
+    pointer-events: none;
 
     transition: all 0.5s ease-in-out;
 }
@@ -72,13 +73,18 @@ button:focus {
     position: absolute;
     top: 0;
     right: 0;
-    padding: 0.5rem 0.7rem;
-    border-top-right-radius: 1rem;
-    border-bottom-left-radius: 0.5rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 1.2rem 0.3rem 1.2rem 1.2rem;
     border: none;
     background: rgb(73, 73, 73);
     color: white;
     font-weight: bold;
+    cursor: pointer;
+}
+
+.sliders span {
+    color: rgb(165, 165, 165);
+    font-size: 1.2rem;
 }
 
 .controls {
@@ -127,6 +133,30 @@ button:focus {
     margin: 2rem 0;
 }
 
+/* Slider stuff */
+input[type="range"] {
+    -webkit-appearance: none;
+    margin: 1rem 0rem;
+    width: 100%;
+    position: relative;
+    border-radius: 1rem;
+    cursor: pointer;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    margin: 0.1rem 0;
+    background: rgb(233, 228, 228);
+    cursor: pointer;
+    border: 1px solid rgb(207, 207, 207);
+    border-radius: 100%;
+}
+
+/* Responsive stuff */
 @media only screen and (max-width: 750px) {
     .color h2 {
         font-size: 1rem;
@@ -142,5 +172,9 @@ button:focus {
     }
     .panel {
         margin-top: 0;
+    }
+
+    .sliders span {
+        font-size: 0.6rem;
     }
 }
