@@ -38,8 +38,15 @@ function randomColors() {
         const hexText = div.children[0];
         const randomColor = generateHex();
 
-        // Add it to the array
-        initialColors.push(randomColor.hex());
+        // Check if it's locked
+        if (div.classList.contains("locked")) {
+            // Add it to the array
+            initialColors.push(hexText.innerText);
+            return;
+        } else {
+            // Add it to the array
+            initialColors.push(randomColor.hex());
+        }
 
         // Add the color to the bg
         div.style.backgroundColor = randomColor;
@@ -232,4 +239,19 @@ popup.addEventListener("transitionend", () => {
     const popupBox = popup.children[0];
     popup.classList.remove("active");
     popupBox.classList.remove("active");
+});
+
+// Locks the color
+lockBtn.forEach((btn, index) => {
+    btn.addEventListener("click", () => {
+        const i = btn.children[0].classList;
+        colorDivs[index].classList.toggle("locked");
+        if (i.contains("fa-lock-open")) {
+            i.remove("fa-lock-open");
+            i.add("fa-lock");
+        } else {
+            i.remove("fa-lock");
+            i.add("fa-lock-open");
+        }
+    });
 });
