@@ -8,6 +8,7 @@ const currentHexes = document.querySelectorAll(".color h2");
 const adjustBtn = document.querySelectorAll(".adjust");
 const closeAdjustBtn = document.querySelectorAll(".close-adjustment");
 const lockBtn = document.querySelectorAll(".lock");
+const popup = document.querySelector(".copy-container");
 let initialColors;
 
 // Functions
@@ -167,7 +168,21 @@ function resetInputs() {
     });
 }
 
-// Event listeners
+function copyToClipboard(hex) {
+    const el = document.createElement("textarea");
+    el.value = hex.innerText;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand("copy");
+    document.body.removeChild(el);
+
+    // Pop up animation
+    const popupBox = popup.children[0];
+    popup.classList.add("active");
+    popupBox.classList.add("active");
+}
+
+// Event listeners **************************************
 
 // First generated colors
 document.addEventListener("load", randomColors());
@@ -203,4 +218,18 @@ colorDivs.forEach((div, index) => {
     div.addEventListener("change", () => {
         updateTextUI(index);
     });
+});
+
+// Copy the text of HEX to clipboard
+currentHexes.forEach((hex) => {
+    hex.addEventListener("click", () => {
+        copyToClipboard(hex);
+    });
+});
+
+// Close the popup
+popup.addEventListener("transitionend", () => {
+    const popupBox = popup.children[0];
+    popup.classList.remove("active");
+    popupBox.classList.remove("active");
 });
