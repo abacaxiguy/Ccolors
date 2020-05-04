@@ -1,4 +1,4 @@
-// Global selections and varirables
+// ****** Global selections and varirables ******
 
 const colorDivs = document.querySelectorAll(".color");
 const generateBtn = document.querySelector(".generate");
@@ -11,7 +11,7 @@ const lockBtn = document.querySelectorAll(".lock");
 const popup = document.querySelector(".copy-container");
 let initialColors;
 
-// Functions
+// ************** Functions ****************
 
 // Color Generator
 function generateHex() {
@@ -175,6 +175,7 @@ function resetInputs() {
     });
 }
 
+// Create a textarea to copy the HEX of the color
 function copyToClipboard(hex) {
     const el = document.createElement("textarea");
     el.value = hex.innerText;
@@ -189,15 +190,17 @@ function copyToClipboard(hex) {
     popupBox.classList.add("active");
 }
 
-// Event listeners **************************************
+// *************** Event listeners ******************
 
-// First generated colors
+// First generated colors and library palettes
 document.addEventListener("load", randomColors());
 
 // Space key to generate colors
 document.addEventListener("keypress", function (e) {
-    e.preventDefault();
-    if (e.keyCode == 32) randomColors();
+    if (e.keyCode === 32 && !saveContainer.classList.contains("active")) {
+        e.preventDefault();
+        randomColors();
+    }
 });
 
 // Button to generate colors
@@ -255,3 +258,222 @@ lockBtn.forEach((btn, index) => {
         }
     });
 });
+
+// Save to palette & local storage stuff
+const saveBtn = document.querySelector(".save");
+const submitSave = document.querySelector(".submit-save");
+const closeSave = document.querySelector(".close-save");
+const saveContainer = document.querySelector(".save-container");
+const saveInput = document.querySelector(".save-container input");
+const savePopup = saveContainer.children[0];
+let savedPalettes = [];
+
+// Library stuff
+const libBtn = document.querySelector(".library");
+const libContainer = document.querySelector(".library-container");
+const libPopup = libContainer.children[0];
+
+// *************** Event listeners ******************
+
+// Open save palette popup
+saveBtn.addEventListener("click", openPalette);
+
+// Close save palette popup
+closeSave.addEventListener("click", closePalette);
+
+// Close save palette popup by clicking outside
+saveContainer.addEventListener("click", (e) => {
+    if (e.target.classList.contains("save-container")) closePalette();
+});
+
+// Enter to save the library
+saveInput.addEventListener("keypress", function (e) {
+    if (e.keyCode === 13 && saveInput.value) {
+        closePalette();
+        savePalette();
+    }
+});
+
+// Save the current palette to the library
+submitSave.addEventListener("click", savePalette);
+
+// Open library popup
+libBtn.addEventListener("click", toggleLibrary);
+
+// Close library popup by clicking outside
+libContainer.addEventListener("click", (e) => {
+    if (e.target.classList.contains("library-container")) toggleLibrary();
+});
+
+// ************** Functions ****************
+
+// Open save palette popup
+function openPalette() {
+    saveInput.value = "";
+    saveInput.focus();
+    saveContainer.classList.add("active");
+    savePopup.classList.add("active");
+}
+
+// Close save palette popup
+function closePalette() {
+    console.log("sup");
+    saveContainer.classList.remove("active");
+    savePopup.classList.remove("active");
+}
+
+// Save the current palette to the library
+function savePalette() {
+    saveContainer.classList.remove("active");
+    savePopup.classList.remove("active");
+    const name = saveInput.value;
+
+    // Validation
+    if (!name) return;
+
+    const colors = [];
+    currentHexes.forEach((hex) => colors.push(hex.innerText));
+
+    // Generate object
+    const paletteObjects = JSON.parse(localStorage.getItem("palettes"));
+    let paletteNr;
+
+    // if it has colors in Local storage, get them
+    if (paletteObjects) paletteNr = paletteObjects.length;
+    else paletteNr = savedPalettes.length;
+
+    const paletteObj = { name, colors, nr: paletteNr };
+    savedPalettes.push(paletteObj);
+
+    // Save to local storage
+    saveToLocal(paletteObj);
+    saveInput.value = "";
+
+    // Generate the palette for library
+    const palette = document.createElement("div");
+    palette.classList.add("custom-palette");
+    const title = document.createElement("h4");
+    title.innerText = paletteObj.name;
+    const preview = document.createElement("div");
+    preview.classList.add("small-preview");
+
+    paletteObj.colors.forEach((smallColor) => {
+        const div = document.createElement("div");
+        div.style.backgroundColor = smallColor;
+        preview.appendChild(div);
+    });
+
+    const paletteBtn = document.createElement("button");
+    paletteBtn.classList.add("pick-palette-btn");
+    paletteBtn.classList.add(paletteObj.nr);
+    paletteBtn.innerText = "Select";
+
+    // Atach event to the button 'Select'
+    paletteBtn.addEventListener("click", (e) => {
+        toggleLibrary();
+        const paletteIndex = e.target.classList[1];
+        initialColors = [];
+        savedPalettes[paletteIndex].colors.forEach((color, i) => {
+            initialColors.push(color);
+            colorDivs[i].style.backgroundColor = color;
+            const text = colorDivs[i].children[0];
+            checkTextContrast(color, [text]);
+            updateTextUI(i);
+        });
+        resetInputs();
+    });
+
+    // Append to library
+    palette.appendChild(title);
+    palette.appendChild(preview);
+    palette.appendChild(paletteBtn);
+
+    // Remove the default message
+    if (libPopup.children[1].tagName == "P") libPopup.children[1].remove();
+
+    libPopup.appendChild(palette);
+}
+
+// Save the palette to the local storage
+function saveToLocal(paletteObj) {
+    let localPalettes;
+    if (localStorage.getItem("palettes") === null) {
+        localPalettes = [];
+    } else {
+        localPalettes = JSON.parse(localStorage.getItem("palettes"));
+    }
+
+    localPalettes.push(paletteObj);
+    localStorage.setItem("palettes", JSON.stringify(localPalettes));
+}
+
+function getLocal() {
+    let localPalettes;
+    if (localStorage.getItem("palettes") === null) {
+        localPalettes = [];
+    } else {
+        localPalettes = JSON.parse(localStorage.getItem("palettes"));
+
+        savedPalettes = [...localPalettes];
+
+        localPalettes.forEach((paletteObj) => {
+            // Generate the palette for library
+            const palette = document.createElement("div");
+            palette.classList.add("custom-palette");
+            const title = document.createElement("h4");
+            title.innerText = paletteObj.name;
+            const preview = document.createElement("div");
+            preview.classList.add("small-preview");
+
+            paletteObj.colors.forEach((smallColor) => {
+                const div = document.createElement("div");
+                div.style.backgroundColor = smallColor;
+                preview.appendChild(div);
+            });
+
+            const paletteBtn = document.createElement("button");
+            paletteBtn.classList.add("pick-palette-btn");
+            paletteBtn.classList.add(paletteObj.nr);
+            paletteBtn.innerText = "Select";
+
+            // Atach event to the button 'Select'
+            paletteBtn.addEventListener("click", (e) => {
+                toggleLibrary();
+                const paletteIndex = e.target.classList[1];
+                initialColors = [];
+                localPalettes[paletteIndex].colors.forEach((color, i) => {
+                    initialColors.push(color);
+                    colorDivs[i].style.backgroundColor = color;
+                    const text = colorDivs[i].children[0];
+                    checkTextContrast(color, [text]);
+                    updateTextUI(i);
+                });
+                resetInputs();
+            });
+
+            // Append to library
+            palette.appendChild(title);
+            palette.appendChild(preview);
+            palette.appendChild(paletteBtn);
+
+            // Remove the default message
+            if (libPopup.children[1].tagName == "P")
+                libPopup.children[1].remove();
+
+            libPopup.appendChild(palette);
+        });
+    }
+}
+
+// Open or closes the library popup
+function toggleLibrary(e) {
+    if (libContainer.classList.contains("active")) {
+        libContainer.classList.remove("active");
+        libPopup.classList.remove("active");
+    } else {
+        libContainer.classList.add("active");
+        libPopup.classList.add("active");
+    }
+}
+
+getLocal();
