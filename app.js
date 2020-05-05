@@ -204,7 +204,10 @@ document.addEventListener("keypress", function (e) {
 });
 
 // Button to generate colors
-generateBtn.addEventListener("click", randomColors);
+generateBtn.addEventListener("click", (e) => {
+    randomColors();
+    e.target.blur();
+});
 
 // Close adjust color
 closeAdjustBtn.forEach((btn) =>
@@ -246,7 +249,8 @@ popup.addEventListener("transitionend", () => {
 
 // Locks the color
 lockBtn.forEach((btn, index) => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+        e.target.blur();
         const i = btn.children[0].classList;
         colorDivs[index].classList.toggle("locked");
         if (i.contains("fa-lock-open")) {
